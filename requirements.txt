@@ -15,7 +15,6 @@ Django
 django-allauth
 django-ckeditor
 django-cleanup
-django-crispy-forms
 django-js-asset
 hyperlink
 idna
@@ -43,3 +42,4 @@ typing-extensions
 tzdata
 urllib3
 zope.interface
+crispy-bootstrap5
