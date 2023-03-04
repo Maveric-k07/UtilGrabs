@@ -3,6 +3,8 @@ from django.core.checks import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from friend.models import FriendList
+from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
@@ -351,7 +353,17 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 def group(request):
-    return render(request, "blog/group.html", {"title": "About"})
+    context = {}
+    profile = Profile.objects.get(user=request.user)
+    everyone = []
+    everyone.append(profile)
+    users = [user for user in profile.friends.all()]
+    everyone.extend(users)
+
+    context["everyone"] = everyone
+    # else:
+    #     return HttpResponse("You must be friends to view their friends list.")
+    return render(request, "blog/group.html", {"everyone": everyone})
 
 
 """ Search by post title or username """

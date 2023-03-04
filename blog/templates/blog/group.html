@@ -26,20 +26,14 @@
         </tr>
     </thead>
     <tbody>
+        {% for user in everyone %}
         <tr>
             <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
+            <td>{{user.user}}</td>
+            <td>{{user.current_bill}}</td>
         </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-        </tr>
+        {% endfor %}
+        
     </tbody>
 </table>
 
