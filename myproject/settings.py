@@ -58,10 +58,8 @@ INSTALLED_APPS = [
     "blog.apps.BlogConfig",
     "users.apps.UsersConfig",
     "notification",
-    "chat",
     "channels",
     "friend",
-    "videocall",
 ]
 
 MIDDLEWARE = [
