@@ -15,9 +15,6 @@
 						<p>
 							<a class="mr-2 h4" href="{% url 'profile-detail-view' pk=friend.0.pk %}">{{friend.0.username|truncatechars:50}}</a>
 						</p>
-						{% if friend.1 %}
-							<a href="{% url 'room-choice' friend.0.id %}">Send a Message</a>
-						{% endif %}
 					</div>
 
 					{% if friend.1 %}
