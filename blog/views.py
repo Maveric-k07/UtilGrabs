@@ -19,17 +19,23 @@ from blog.utils import is_ajax
 
 
 """ Home page with all posts """
+
+
 def first(request):
     context = {
-        'posts':Post.objects.all()
+        'profile': Profile.objects.get(user=request.user),
+        'posts': Post.objects.all()
     }
     return render(request, 'blog/first.html', context)
 
+
 """ Posts of following user profiles """
+
+
 @login_required
 def posts_of_following_profiles(request):
 
-    profile = Profile.objects.get(user = request.user)
+    profile = Profile.objects.get(user=request.user)
     users = [user for user in profile.following.all()]
     posts = []
     qs = None
@@ -39,8 +45,9 @@ def posts_of_following_profiles(request):
         posts.append(p_posts)
     my_posts = profile.profile_posts()
     posts.append(my_posts)
-    if len(posts)>0:
-        qs = sorted(chain(*posts), reverse=True, key=lambda obj:obj.date_posted)
+    if len(posts) > 0:
+        qs = sorted(chain(*posts), reverse=True,
+                    key=lambda obj: obj.date_posted)
 
     paginator = Paginator(qs, 5)
     page = request.GET.get('page')
@@ -50,11 +57,13 @@ def posts_of_following_profiles(request):
         posts_list = paginator.page(1)
     except EmptyPage:
         posts_list = paginator.page(paginator.num_pages)
-  
-    return render(request,'blog/feeds.html',{'profile':profile,'posts':posts_list})
+
+    return render(request, 'blog/feeds.html', {'profile': profile, 'posts': posts_list})
 
 
 """ Post Like """
+
+
 @login_required
 def LikeView(request):
 
@@ -63,26 +72,31 @@ def LikeView(request):
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
         liked = False
-        notify = Notification.objects.filter(post=post, sender=request.user, notification_type=1)
+        notify = Notification.objects.filter(
+            post=post, sender=request.user, notification_type=1)
         notify.delete()
     else:
         post.likes.add(request.user)
         liked = True
-        notify = Notification(post=post, sender=request.user, user=post.author, notification_type=1)
+        notify = Notification(post=post, sender=request.user,
+                              user=post.author, notification_type=1)
         notify.save()
 
     context = {
-        'post':post,
-        'total_likes':post.total_likes(),
-        'liked':liked,
+        'post': post,
+        'total_likes': post.total_likes(),
+        'liked': liked,
     }
 
     if is_ajax(request=request):
-        html = render_to_string('blog/like_section.html',context, request=request)
-        return JsonResponse({'form':html})
+        html = render_to_string('blog/like_section.html',
+                                context, request=request)
+        return JsonResponse({'form': html})
 
 
 """ Post save """
+
+
 @login_required
 def SaveView(request):
 
@@ -94,21 +108,24 @@ def SaveView(request):
     else:
         post.saves.add(request.user)
         saved = True
-    
+
     context = {
-        'post':post,
-        'total_saves':post.total_saves(),
-        'saved':saved,
+        'post': post,
+        'total_saves': post.total_saves(),
+        'saved': saved,
     }
 
     if is_ajax(request=request):
-        html = render_to_string('blog/save_section.html',context, request=request)
-        return JsonResponse({'form':html})
+        html = render_to_string('blog/save_section.html',
+                                context, request=request)
+        return JsonResponse({'form': html})
 
 
 """ Like post comments """
+
+
 @login_required
-def LikeCommentView(request): # , id1, id2              id1=post.pk id2=reply.pk
+def LikeCommentView(request):  # , id1, id2              id1=post.pk id2=reply.pk
     post = get_object_or_404(Comment, id=request.POST.get('id'))
     cliked = False
     if post.likes.filter(id=request.user.id).exists():
@@ -121,7 +138,7 @@ def LikeCommentView(request): # , id1, id2              id1=post.pk id2=reply.pk
     cpost = get_object_or_404(Post, id=request.POST.get('pid'))
     total_comments2 = cpost.comments.all().order_by('-id')
     total_comments = cpost.comments.all().filter(reply=None).order_by('-id')
-    tcl={}
+    tcl = {}
     for cmt in total_comments2:
         total_clikes = cmt.total_clikes()
         cliked = False
@@ -130,29 +147,49 @@ def LikeCommentView(request): # , id1, id2              id1=post.pk id2=reply.pk
 
         tcl[cmt.id] = cliked
 
-
     context = {
-        'comment_form':CommentForm(),
-        'post':cpost,
-        'comments':total_comments,
-        'total_clikes':post.total_clikes(),
-        'clikes':tcl
+        'comment_form': CommentForm(),
+        'post': cpost,
+        'comments': total_comments,
+        'total_clikes': post.total_clikes(),
+        'clikes': tcl
     }
 
     if is_ajax(request=request):
-        html = render_to_string('blog/comments.html',context, request=request)
-        return JsonResponse({'form':html})
+        html = render_to_string('blog/comments.html', context, request=request)
+        return JsonResponse({'form': html})
+
+
+@login_required
+def UploadBill(request):
+    if request.method == "POST":
+        profile = Profile.objects.get(user=request.user)
+        try:
+            if request.POST['water_bill']:
+                profile.water_bill = int(request.POST['water_bill'])
+                profile.save()
+        except:
+            request.error = "Should be of type Float"
+        try:
+            if request.POST['current_bill']:
+                profile.current_bill = request.POST['current_bill']
+                profile.save()
+        except:
+            request.error = "Should be of type Float"
+    return redirect('home/')
 
 
 """ Home page with all posts """
+
+
 class PostListView(ListView):
     model = Post
-    template_name = 'blog/home.html' 
+    template_name = 'blog/home.html'
     context_object_name = 'posts'
     ordering = ['-date_posted']
     paginate_by = 5
 
-    def get_context_data(self, *args,**kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super(PostListView, self).get_context_data()
         users = list(User.objects.exclude(pk=self.request.user.pk))
         if len(users) > 3:
@@ -165,9 +202,11 @@ class PostListView(ListView):
 
 
 """ All the posts of the user """
+
+
 class UserPostListView(ListView):
     model = Post
-    template_name = 'blog/user_posts.html' 
+    template_name = 'blog/user_posts.html'
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -176,9 +215,10 @@ class UserPostListView(ListView):
         return Post.objects.filter(author=user).order_by('-date_posted')
 
 
-
 """ Post detail view """
-def PostDetailView(request,pk):
+
+
+def PostDetailView(request, pk):
 
     stuff = get_object_or_404(Post, id=pk)
     total_likes = stuff.total_likes()
@@ -196,22 +236,24 @@ def PostDetailView(request,pk):
             reply_id = request.POST.get('comment_id')
             if reply_id:
                 comment_qs = Comment.objects.get(id=reply_id)
-            
-            comment = Comment.objects.create(name=request.user,post=stuff,body=form, reply=comment_qs)
+
+            comment = Comment.objects.create(
+                name=request.user, post=stuff, body=form, reply=comment_qs)
             comment.save()
             if reply_id:
-                notify = Notification(post=stuff, sender=request.user, user=stuff.author, text_preview=form, notification_type=4)
+                notify = Notification(post=stuff, sender=request.user,
+                                      user=stuff.author, text_preview=form, notification_type=4)
                 notify.save()
             else:
-                notify = Notification(post=stuff, sender=request.user, user=stuff.author, text_preview=form, notification_type=3)
+                notify = Notification(post=stuff, sender=request.user,
+                                      user=stuff.author, text_preview=form, notification_type=3)
                 notify.save()
             total_comments = stuff.comments.all().filter(reply=None).order_by('-id')
             total_comments2 = stuff.comments.all().order_by('-id')
     else:
         comment_form = CommentForm()
-             
 
-    tcl={}
+    tcl = {}
     for cmt in total_comments2:
         total_clikes = cmt.total_clikes()
         cliked = False
@@ -219,50 +261,50 @@ def PostDetailView(request,pk):
             cliked = True
 
         tcl[cmt.id] = cliked
-    context["clikes"]=tcl
-
+    context["clikes"] = tcl
 
     liked = False
     if stuff.likes.filter(id=request.user.id).exists():
         liked = True
-    context["total_likes"]=total_likes
-    context["liked"]=liked
-
+    context["total_likes"] = total_likes
+    context["liked"] = liked
 
     saved = False
     if stuff.saves.filter(id=request.user.id).exists():
         saved = True
-    context["total_saves"]=total_saves
-    context["saved"]=saved
-    
+    context["total_saves"] = total_saves
+    context["saved"] = saved
 
     context['comment_form'] = comment_form
 
-    context['post']=stuff
-    context['comments']=total_comments
+    context['post'] = stuff
+    context['comments'] = total_comments
 
     if is_ajax(request=request):
-        html = render_to_string('blog/comments.html',context, request=request)
-        return JsonResponse({'form':html})
+        html = render_to_string('blog/comments.html', context, request=request)
+        return JsonResponse({'form': html})
 
     return render(request, 'blog/post_detail.html', context)
 
 
 """ Create post """
+
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields =['title', 'content']
+    fields = ['title', 'content']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
 
-
 """ Update post """
+
+
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields =['title', 'content']
+    fields = ['title', 'content']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -276,6 +318,8 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 """ Delete post """
+
+
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     success_url = '/'
@@ -288,11 +332,15 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 """ About page """
+
+
 def about(request):
-    return render(request, 'blog/about.html', {'title':'About'})
+    return render(request, 'blog/about.html', {'title': 'About'})
 
 
 """ Search by post title or username """
+
+
 def search(request):
     query = request.GET['query']
     if len(query) >= 150 or len(query) < 1:
@@ -301,31 +349,34 @@ def search(request):
         allposts = Post.objects.none()
     else:
         allpostsTitle = Post.objects.filter(title__icontains=query)
-        allpostsAuthor = Post.objects.filter(author__username = query)
+        allpostsAuthor = Post.objects.filter(author__username=query)
         allposts = allpostsAuthor.union(allpostsTitle)
-    
+
     params = {'allposts': allposts}
     return render(request, 'blog/search_results.html', params)
 
 
 """ Liked posts """
+
+
 @login_required
 def AllLikeView(request):
     user = request.user
     liked_posts = user.blogpost.all()
     context = {
-        'liked_posts':liked_posts
+        'liked_posts': liked_posts
     }
     return render(request, 'blog/liked_posts.html', context)
 
 
 """ Saved posts """
+
+
 @login_required
 def AllSaveView(request):
     user = request.user
     saved_posts = user.blogsave.all()
     context = {
-        'saved_posts':saved_posts
+        'saved_posts': saved_posts
     }
     return render(request, 'blog/saved_posts.html', context)
-
