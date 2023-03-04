@@ -108,10 +108,20 @@
       <br>
       <div class="row">
         <div>
-          <input class="inputfield" placeholder="Current Bill" type="number" name="" id=""> <input type="submit"
-            value="Submit">
-          <input class="inputfield" placeholder="Water Bill" type="number" name="" id=""> <input type="submit"
-            value="Submit">
+          {% if profile.current_bill is none %}
+          <form action="/add_bill" method="POST">
+            {% csrf_token %}
+            <input class="inputfield" placeholder="Current Bill" type="number" name="current_bill" id="current_bill"> <input type="submit"
+              value="Submit">
+          </form>
+          {% endif %}
+          {% if profile.water_bill is not defined %}
+          <form action="/add_bill" method="POST">
+            {% csrf_token %}
+            <input class="inputfield" placeholder="Water Bill" type="number" name="water_bill" id="water_bill"> <input type="submit"
+              value="Submit">
+          </form>
+          {% endif %}
         </div>
       </div><br>
     </div>
