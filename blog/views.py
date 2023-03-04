@@ -358,7 +358,14 @@ def group(request):
     everyone = []
     everyone.append(profile)
     users = [user for user in profile.friends.all()]
-    everyone.extend(users)
+    all_users = []
+
+    for user in users:
+        profile = Profile.objects.get(user=user)
+        all_users.append(profile)
+
+    everyone.extend(all_users)
+
     current_bill_list = []
     water_bill_list = []
     for user in everyone:
