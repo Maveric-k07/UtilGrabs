@@ -195,7 +195,7 @@ class PostListView(ListView):
     context_object_name = "posts"
     ordering = ["-date_posted"]
     paginate_by = 5
-    
+
     def get_context_data(self, *args, **kwargs):
         context = super(PostListView, self).get_context_data()
         users = list(User.objects.exclude(pk=self.request.user.pk))
@@ -204,7 +204,7 @@ class PostListView(ListView):
         else:
             cnt = len(users)
         random_users = random.sample(users, cnt)
-        context['random_users'] = random_users
+        context["random_users"] = random_users
         return context
 
 
@@ -359,11 +359,24 @@ def group(request):
     everyone.append(profile)
     users = [user for user in profile.friends.all()]
     everyone.extend(users)
+    current_bill_list = []
+    water_bill_list = []
+    for user in everyone:
+        current_bill_list.append((user, user.current_bill))
+        water_bill_list.append((user, user.water_bill))
 
-    context["everyone"] = everyone
-    # else:
-    #     return HttpResponse("You must be friends to view their friends list.")
-    return render(request, "blog/group.html", {"everyone": everyone})
+    current_winner = min(current_bill_list, key=lambda t: t[1])[0]
+    water_winner = min(water_bill_list, key=lambda t: t[1])[0]
+
+    return render(
+        request,
+        "blog/group.html",
+        {
+            "everyone": everyone,
+            "current_winner": current_winner,
+            "water_winner": water_winner,
+        },
+    )
 
 
 """ Search by post title or username """
