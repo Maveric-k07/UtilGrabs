@@ -112,10 +112,12 @@
             id="dropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Your Bill Type
           </a>
+          {% if profile.current_bill is defined %}
+              {{ profile.current_bill }}
+          {% endif%}
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
             <a class="dropdown-item" href="#">Current Bill</a>
             <a class="dropdown-item" href="#">Water Bill</a>
-            <a class="dropdown-item" href="#">Mobile Bill</a>
           </div>
         </div>
         <div class="col-md-6 bill-input"><input type="number" name="bill_amt" id="" style="width: 107.2px;
