@@ -195,7 +195,7 @@ class PostListView(ListView):
     context_object_name = "posts"
     ordering = ["-date_posted"]
     paginate_by = 5
-
+    
     def get_context_data(self, *args, **kwargs):
         context = super(PostListView, self).get_context_data()
         users = list(User.objects.exclude(pk=self.request.user.pk))
@@ -204,7 +204,7 @@ class PostListView(ListView):
         else:
             cnt = len(users)
         random_users = random.sample(users, cnt)
-        context["random_users"] = random_users
+        context['random_users'] = random_users
         return context
 
 
