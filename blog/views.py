@@ -179,7 +179,7 @@ def UploadBill(request):
             request.error = "Should be of type Float"
         try:
             if request.POST["current_bill"]:
-                profile.current_bill = request.POST["current_bill"]
+                profile.current_bill = int(request.POST["current_bill"])
                 profile.save()
         except:
             request.error = "Should be of type Float"
@@ -195,7 +195,7 @@ class PostListView(ListView):
     context_object_name = "posts"
     ordering = ["-date_posted"]
     paginate_by = 5
-
+    
     def get_context_data(self, *args, **kwargs):
         context = super(PostListView, self).get_context_data()
         users = list(User.objects.exclude(pk=self.request.user.pk))
@@ -204,7 +204,7 @@ class PostListView(ListView):
         else:
             cnt = len(users)
         random_users = random.sample(users, cnt)
-        context["random_users"] = random_users
+        context['random_users'] = random_users
         return context
 
 
@@ -352,14 +352,15 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 """ About page """
 
 
+
 def group(request):
     context = {}
     profile = Profile.objects.get(user=request.user)
     everyone = []
     everyone.append(profile)
-    users = [user for user in profile.friends.all()]
+    users = [user for user in FriendList.objects.get(user=request.user).friends.all()]
     all_users = []
-
+    print(users)
     for user in users:
         profile = Profile.objects.get(user=user)
         all_users.append(profile)
@@ -384,6 +385,8 @@ def group(request):
             "water_winner": water_winner,
         },
     )
+
+
 
 
 """ Search by post title or username """
