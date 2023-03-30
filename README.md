@@ -1,6 +1,7 @@
 # Django Social Network to compete with your friends!
 
-A social media web-application with Django.
+Hackathon winning project at St Francis College for Women, Hyderabad.
+Compete with your friends and find out who has the lowest energy consumption of all and get exciting prizes!!
 
 ## Features :
 
