@@ -12,6 +12,7 @@ Compete with your friends and find out who has the lowest energy consumption of 
 <li>Follow and Unfollow users to view their posts</li>
 <li>Friend Request</li>
 <li>Notifications</li>
+<li>Competitions</li>
 
 ## Demo (Not up-to-date)
 
