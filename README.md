@@ -1,4 +1,4 @@
-# Django Social Network
+# Django Social Network to compete with your friends!
 
 A social media web-application with Django.
 
@@ -11,8 +11,6 @@ A social media web-application with Django.
 <li>Follow and Unfollow users to view their posts</li>
 <li>Friend Request</li>
 <li>Notifications</li>
-<li>Chats using websockets</li>
-<li>Video Calls</li>
 
 ## Demo (Not up-to-date)
 
@@ -26,9 +24,6 @@ https://user-images.githubusercontent.com/64803043/118666705-02735600-b811-11eb-
 
 - Add env variables to ".test.env" and rename it to ".env"
 
-- Add GOOGLE_RECAPTCHA_SECRET_KEY to both .env and the file mentioned below https://github.com/Ronik22/Django_Social_Network_App/blob/main/users/templates/users/register.html#L45
-
-- Add agora app_id to .env and to https://github.com/Ronik22/Django_Social_Network_App/blob/main/blog/static/blog/js/streams.js#L2
 
 ## Installation
 
@@ -36,7 +31,7 @@ https://user-images.githubusercontent.com/64803043/118666705-02735600-b811-11eb-
     $ python -m venv venv
     $ source venv/Scripts/activate
     (venv) pip install -r requirements.txt
-    (venv) cd Django_Social_Network_App
+    (venv) cd UtilGrabs
     (venv) python manage.py makemigrations
     (venv) python manage.py migrate
     (venv) python manage.py createsuperuser
@@ -47,12 +42,6 @@ https://user-images.githubusercontent.com/64803043/118666705-02735600-b811-11eb-
 ## Add django-allauth config
 
 https://django-allauth.readthedocs.io/en/latest/installation.html#post-installation
-
-## Others
-
-- To use other DB edit this https://github.com/Ronik22/Django_Social_Network_App/blob/main/myproject/settings.py#L107
-- To use other providers edit this https://github.com/Ronik22/Django_Social_Network_App/blob/main/myproject/settings.py#L205
-- To use redis instead edit this https://github.com/Ronik22/Django_Social_Network_App/blob/main/myproject/settings.py#L197
 
 ## Running Tests
 
